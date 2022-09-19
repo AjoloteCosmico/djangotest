@@ -1,6 +1,8 @@
+import http
 from django.http import HttpResponse
 from django.template import loader
 from .models import Question
+from .models import respuestas
 from django.shortcuts import render
 
 def detail(request, question_id):
@@ -19,3 +21,25 @@ def index(request):
         'latest_question_list': latest_question_list,
     }
     return HttpResponse(template.render(context, request))
+
+def encuesta01(request):
+    template=loader.get_template('polls/encuesta01.html')
+    context={
+        'contexto' : "ando rolando el contexto" 
+    }
+    return HttpResponse(template.render(context,request))
+
+
+def createpost(request):
+        if request.method == 'POST':
+            if request.POST.get('nombre') and request.POST.get('numero'):
+                post=respuestas()
+                post.nombre= request.POST.get('nombre')
+                post.cuenta= request.POST.get('numero')
+                post.save()
+                
+                return render(request, 'polls/index.html')  
+
+        else:
+                return render(request,'polls/index.html')
+

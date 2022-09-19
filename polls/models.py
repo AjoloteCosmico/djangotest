@@ -20,9 +20,11 @@ class Choice(models.Model):
 class respuestas(models.Model):
     #Datos personales
     cuenta=models.CharField(max_length=9)
+    email=models.CharField(max_length=50,default="no ingreso correo")
     nombre=models.CharField(max_length=50)
     materno=models.CharField(max_length=50)
     paterno=models.CharField(max_length=50)
+    carrera=models.CharField(max_length=3,default="000")
     #primer reactivo de la encuesta
     trabaja=models.BooleanField()
 
