@@ -6,11 +6,16 @@
   padding: 0  
 }
 body {
-  background: url(http://img6.uploadhouse.com/fileuploads/17737/17737075bdad5cfa9423bb2c3c2beee695c72bb8.jpg);
+  /*background: url(http://img6.uploadhouse.com/fileuploads/17737/17737075bdad5cfa9423bb2c3c2beee695c72bb8.jpg); */
+  background: url("/static/biblioteca3.png") 50% 0 no-repeat fixed;
+  background-size: cover;
   color: #B1B1B1;
   margin: 15px auto 0;
   width: 410px;
+  
 }
+
+
 #contact {
   overflow: auto;
 }
@@ -80,4 +85,9 @@ body {
   border: medium none;
   cursor: pointer;
   width: 15px;
+}
+
+.cabecera1{
+  text-align: center;
+  padding: 40px;
 }

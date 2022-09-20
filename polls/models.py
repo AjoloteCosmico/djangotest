@@ -26,6 +26,6 @@ class respuestas(models.Model):
     paterno=models.CharField(max_length=50)
     carrera=models.CharField(max_length=3,default="000")
     #primer reactivo de la encuesta
-    trabaja=models.BooleanField()
+    trabaja=models.BooleanField(default=False)
 
 
