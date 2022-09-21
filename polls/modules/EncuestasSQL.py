@@ -1,6 +1,7 @@
 from pickle import FALSE
 import mysql.connector
 import pandas as pd
+import os
 class EncuestasDB:
     cnx = mysql.connector.connect(user='fgonzalez', password='6bM59%1**t^O',
                               host='192.168.0.254',
@@ -41,6 +42,8 @@ class EncuestasDB:
     #TODO: dgae como dataframe debera en un futuro ser un parametro, al igual que la generacion
     #Eg2019 pasará a llamarse EgGeneracion
     def __init__(self):
+        BASE = os.path.dirname(os.path.abspath(__file__))
+        
         self.cnx.commit()
         #Todas las encuestas alv, elegir NBR7 también 
         query = ('SELECT cuenta, aplica, fec_capt, nbr7,ngr11f FROM respuestas2  order by fec_capt ')
@@ -48,7 +51,7 @@ class EncuestasDB:
 
         # Formatear cuenta
         self.encuestas['cuenta'] = EncuestasDB.formatear_cuenta(self.encuestas['cuenta'])
-        dgae = pd.read_excel('dgae.xlsx')
+        dgae = pd.read_excel(os.path.join(BASE, "files/dgae.xlsx"))
          #Seleccionamos unicamente a los egresados de 2019, que son el objetivo de este estudio
         self.Eg2019 = dgae.loc[dgae["ANIO"]==2019,['CUENTA', 'PLANTEL', 'CARRERA']]
         # Formateo de cuenta
@@ -64,8 +67,8 @@ class EncuestasDB:
         #En adelante, contamos solo encuestas completas, unu
         self.encuestas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].notna()]
         self.encuestasIncompletas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].isna()]
-        self.listado_carreras = pd.read_excel(r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx',usecols=[2,3], names=('Clave Carrera', "Carrera")).drop_duplicates() 
-        self.listado_planteles = pd.read_excel(r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx',usecols=[0,1], names=('Clave Plantel', "Plantel")).drop_duplicates()
+        self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('Clave Carrera', "Carrera")).drop_duplicates() 
+        self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('Clave Plantel', "Plantel")).drop_duplicates()
         print(" EncuestasDB del PVE Comit 1.2.5")
 
 

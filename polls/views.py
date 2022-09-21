@@ -6,6 +6,7 @@ from .forms import respForm
 from .models import Question
 from .models import respuestas
 from django.shortcuts import render,redirect
+from .modules.EncuestasSQL import EncuestasDB
 
 def createpost(request):
 
@@ -71,8 +72,11 @@ def encuesta01(request):
 
 def estado(request):
     template=loader.get_template('polls/estado.html')
+    conexion = EncuestasDB()
     context={
-        'contexto' : "ando rolando el contexto" 
+    'porEncuestador' : conexion.cuentaPorEncuestador(),
+    'porMes': conexion.cuentaPorMes(),
+    'porCarrera' : conexion.cuentaPorCarrera()
     }
         
     return HttpResponse(template.render(context,request))
