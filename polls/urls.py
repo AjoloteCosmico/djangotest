@@ -11,7 +11,8 @@ urlpatterns = [
     path('<int:question_id>/results/', views.results, name='results'),
     # ex: /polls/5/vote/
     path('<int:question_id>/vote/', views.vote, name='vote'),
-     path('encuesta01', views.encuesta01, name='encuesta01'),
+    path('encuesta01', views.encuesta01, name='encuesta01'),
+    path('estado', views.estado, name='estado'),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.ico'))),
     path('add-resp', views.addresp, name="add-resp")
 

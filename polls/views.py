@@ -69,6 +69,13 @@ def encuesta01(request):
         
     return HttpResponse(template.render(context,request))
 
+def estado(request):
+    template=loader.get_template('polls/estado.html')
+    context={
+        'contexto' : "ando rolando el contexto" 
+    }
+        
+    return HttpResponse(template.render(context,request))
 
 def addresp(request):
     form = respForm
@@ -78,3 +85,4 @@ def addresp(request):
             form.save()
     context = {'form':form}
     return render(request, 'polls/add-resp.html', context)
+    

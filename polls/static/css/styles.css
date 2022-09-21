@@ -1,6 +1,10 @@
+:root {
+  --black: #050005;
+  --white: #faf0f6;
+}
 body {
-    background-color: rgb(5, 0, 5); 
-    color: bisque;
+    background-color: var(--black); 
+    color: var(--white);
     text-align: center;
   }
 
@@ -8,10 +12,10 @@ body {
     text-align: center;
   }
   .button {
-    background-color: bisque;
+    background-color: var(--white);
     border: none;
     border-radius: 5px;
-    color: black;
+    color: var(--black);
     padding: 15px 32px;
     text-align: center;
     text-decoration: none;
@@ -19,5 +23,6 @@ body {
     font-size: 16px;
     margin: 4px 2px;
     cursor: pointer;
+    size: 30px 60px;
   }
   

@@ -11,9 +11,14 @@
   <body>
     <H1>Diseño en proceso</H1>
     <p>Lista de encuestas</p>
-    <button  class="button">
-      <a href="{% url 'encuesta01' %}">Encuesta exalumnos</a>
+    <br><br>
+    <button  class="button" onclick="location.href='{% url 'encuesta01' %}'">
+      <a> Encuesta exalumnos</a>
        </button>
+       <br><br>
+    <button  class="button" onclick="location.href='{% url 'estado' %}'">
+      <a >Estado del estudio</a>
+        </button> 
 
     <!--{% if latest_question_list %}
     <ul>
