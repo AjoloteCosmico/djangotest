@@ -1,0 +1,3 @@
+Librerias:
+   django
+   pychart.js

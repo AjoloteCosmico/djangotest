@@ -1,0 +1,19 @@
+{% block title %}
+Agregar respuesta
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-12">
+            <h1>agregar respuesta </h1>
+            <form action="" method='POST'>
+                {% csrf_token %}
+                {{form.as_p}}
+                <button type="submit" class="btn btn-primary btn-sm" value=""> Save</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
