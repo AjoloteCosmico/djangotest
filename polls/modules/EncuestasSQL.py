@@ -41,9 +41,8 @@ class EncuestasDB:
     
     #TODO: dgae como dataframe debera en un futuro ser un parametro, al igual que la generacion
     #Eg2019 pasará a llamarse EgGeneracion
-    def __init__(self):
+    def __init__(self,dgae):
         BASE = os.path.dirname(os.path.abspath(__file__))
-        
         self.cnx.commit()
         #Todas las encuestas alv, elegir NBR7 también 
         query = ('SELECT cuenta, aplica, fec_capt, nbr7,ngr11f FROM respuestas2  order by fec_capt ')
@@ -51,7 +50,6 @@ class EncuestasDB:
 
         # Formatear cuenta
         self.encuestas['cuenta'] = EncuestasDB.formatear_cuenta(self.encuestas['cuenta'])
-        dgae = pd.read_excel(os.path.join(BASE, "files/dgae.xlsx"))
          #Seleccionamos unicamente a los egresados de 2019, que son el objetivo de este estudio
         self.Eg2019 = dgae.loc[dgae["ANIO"]==2019,['CUENTA', 'PLANTEL', 'CARRERA']]
         # Formateo de cuenta
@@ -69,7 +67,7 @@ class EncuestasDB:
         self.encuestasIncompletas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].isna()]
         self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('Clave Carrera', "Carrera")).drop_duplicates() 
         self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('Clave Plantel', "Plantel")).drop_duplicates()
-        print(" EncuestasDB del PVE Comit 1.2.5")
+        print(" EncuestasDB del PVE Comit 1.2.6")
 
 
 
@@ -163,8 +161,8 @@ class EncuestasDB:
             reporte=reporte.append({
                 "cuenta": i[1],
                 "Aplicador":aplicador,
-                "PLANTEL":self.plantel(i[5]),
-                "CARRERA":self.carrera(i[6]),
+                "PLANTEL":self.plantel(i[6]),
+                "CARRERA":self.carrera(i[7]),
                 "Fecha": fecha
             }, ignore_index=True)
 

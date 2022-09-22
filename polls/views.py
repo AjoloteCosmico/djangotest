@@ -7,7 +7,8 @@ from .models import Question
 from .models import respuestas
 from django.shortcuts import render,redirect
 from .modules.EncuestasSQL import EncuestasDB
-
+import pandas as pd
+import os
 def createpost(request):
 
         if request.method == "POST":
@@ -40,8 +41,11 @@ def vote(request, question_id):
 def index(request):
     latest_question_list = Question.objects.order_by('-pub_date')[:5]
     template = loader.get_template('polls/index.html')
+    #TODO: cargar aqui todos los files nescesarios, puede ser usando cahcé, o sessions
+    #request.session['dgae']=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
+    
     context = {
-        'latest_question_list': latest_question_list,
+        'context': "ahi andamos, al 100"
     }
     return HttpResponse(template.render(context, request))
 
@@ -72,11 +76,15 @@ def encuesta01(request):
 
 def estado(request):
     template=loader.get_template('polls/estado.html')
-    conexion = EncuestasDB()
+    #dgae=pd.DataFrame(request.session.get('dgae'))
+    #cargando archivo de dgae, en futuras versiones se deve cargar previamente
+    BASE = os.path.dirname(os.path.abspath(__file__))
+    dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
+    conexion = EncuestasDB(dgae)
     context={
-    'porEncuestador' : conexion.cuentaPorEncuestador(),
-    'porMes': conexion.cuentaPorMes(),
-    'porCarrera' : conexion.cuentaPorCarrera()
+    'porEncuestador' : conexion.cuentaPorEncuestador().to_html(),
+    'porMes': conexion.cuentaPorMes().to_html(),
+    'porCarrera' : conexion.cuentaPorCarrera().to_html()
     }
         
     return HttpResponse(template.render(context,request))

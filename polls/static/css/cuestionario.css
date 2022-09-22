@@ -91,3 +91,13 @@ body {
   text-align: center;
   padding: 40px;
 }
+.cabecera1{
+  text-align: left;
+  padding: 30px;
+  font-weight: bolder;
+}
+
+.conteos{
+  align-items: row;
+  font-size: 14px;
+}
