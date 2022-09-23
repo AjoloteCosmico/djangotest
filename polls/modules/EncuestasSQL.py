@@ -2,6 +2,8 @@ from pickle import FALSE
 import mysql.connector
 import pandas as pd
 import os
+import plotly.graph_objects as go
+
 class EncuestasDB:
     cnx = mysql.connector.connect(user='fgonzalez', password='6bM59%1**t^O',
                               host='192.168.0.254',
@@ -65,20 +67,20 @@ class EncuestasDB:
         #En adelante, contamos solo encuestas completas, unu
         self.encuestas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].notna()]
         self.encuestasIncompletas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].isna()]
-        self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('Clave Carrera', "Carrera")).drop_duplicates() 
-        self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('Clave Plantel', "Plantel")).drop_duplicates()
+        self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('ClaveCarrera', "Carrera")).drop_duplicates() 
+        self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('ClavePlantel', "Plantel")).drop_duplicates()
         print(" EncuestasDB del PVE Comit 1.2.6")
 
 
 
     def carrera(self,clave):
-        Scarrera=str(self.listado_carreras.loc[self.listado_carreras["Clave Carrera"]==clave,"Carrera"].values[0])
+        Scarrera=str(self.listado_carreras.loc[self.listado_carreras["ClaveCarrera"]==clave,"Carrera"].values[0])
             #return(unidecode.unidecode(Scarrera.upper()))
         return Scarrera
 
     
     def plantel(self,clave):
-        Splantel=str(self.listado_planteles.loc[self.listado_planteles["Clave Plantel"]==clave,"Plantel"].values[0])
+        Splantel=str(self.listado_planteles.loc[self.listado_planteles["ClavePlantel"]==clave,"Plantel"].values[0])
             #return(unidecode.unidecode(Splantel.upper()))
         return Splantel
 
@@ -105,7 +107,7 @@ class EncuestasDB:
         with warnings.catch_warnings():
              warnings.simplefilter("ignore")
              fxn()
-        Meses = {'01': 'Enero', '02':'Febrero', '03':'Marzo', '04':'Abril', '05':'Mayo','06': 'Mayo',
+        Meses = {'01': 'Enero', '02':'Febrero', '03':'Marzo', '04':'Abril', '05':'Mayo','06': 'Junio',
                    '07': 'Julio', '08':'Agosto', '09':'Septiembre', '10':'Octubre', '11':'Noviembre', '12':'Diciembre'}
         df = self.encuestas
         if fechaInicial:
@@ -146,6 +148,10 @@ class EncuestasDB:
                 "Internet": porInternet.loc[(porInternet["PLANTEL"]==i)&(porInternet["CARRERA"]==k),"cuenta"].size,
                 "Telefonicas": telefonicas.loc[(telefonicas["PLANTEL"]==i)&(telefonicas["CARRERA"]==k),"cuenta"].size,
                },ignore_index=True)
+        
+        # Agregar al contador el nombre de la carrera y plantel
+        conteo = conteo.merge(self.listado_planteles[['ClavePlantel', 'Plantel']].drop_duplicates(), on='ClavePlantel', how='left')
+        conteo = conteo.merge(self.listado_carreras[['ClaveCarrera', 'Carrera']].drop_duplicates(), on='ClaveCarrera', how='left')
         return conteo
 
     def repIndividual(self):

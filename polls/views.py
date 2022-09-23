@@ -9,6 +9,8 @@ from django.shortcuts import render,redirect
 from .modules.EncuestasSQL import EncuestasDB
 import pandas as pd
 import os
+import plotly.express as px
+
 def createpost(request):
 
         if request.method == "POST":
@@ -81,9 +83,45 @@ def estado(request):
     BASE = os.path.dirname(os.path.abspath(__file__))
     dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
     conexion = EncuestasDB(dgae)
+    
+    # Prámetros comunes de gráficas
+    fig_params = {'autosize':False,
+    'paper_bgcolor':"SlateGray",
+    'font':dict(color ='Ivory'),
+    'showlegend':False}
+
+    # Gráfica por encuestador
+    porEncuestador =  conexion.cuentaPorEncuestador()
+    porEncuestador_fig = px.bar(porEncuestador,
+                                x='Encuestador',
+                                y='Realizadas',
+                                color='Encuestador',
+                                title='Conteo por Encuestador',
+                                labels={"Realizadas": "Conteo"})
+    porEncuestador_fig.update_layout(fig_params)
+    porEncuestador_fig.update_layout({'width':800,
+                                      'height':400})
+    porEncuestador_fig = porEncuestador_fig.to_html()
+    
+    # Gráfica por Mes
+    porMes = conexion.cuentaPorMes()
+    porMes_fig = px.bar(porMes,
+             y='Mes',
+             x='realizadas',
+             color='Mes',
+             title='Conteo por Mes',
+             labels={"realizadas": "Conteo"},
+             orientation='h')
+    porMes_fig.update_layout(fig_params)
+    porMes_fig.update_layout({'width':600,
+                              'height':1000})
+    porMes_fig = porMes_fig.to_html()
+    
+    # Gráfica por Carrera
+
     context={
-    'porEncuestador' : conexion.cuentaPorEncuestador().to_html(),
-    'porMes': conexion.cuentaPorMes().to_html(),
+    'porEncuestador' : porEncuestador_fig,
+    'porMes': porMes_fig,
     'porCarrera' : conexion.cuentaPorCarrera().to_html()
     }
         
