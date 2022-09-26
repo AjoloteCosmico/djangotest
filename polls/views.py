@@ -10,6 +10,7 @@ from .modules.EncuestasSQL import EncuestasDB
 import pandas as pd
 import os
 import plotly.express as px
+import plotly.graph_objects as go
 
 def createpost(request):
 
@@ -81,14 +82,15 @@ def estado(request):
     #dgae=pd.DataFrame(request.session.get('dgae'))
     #cargando archivo de dgae, en futuras versiones se deve cargar previamente
     BASE = os.path.dirname(os.path.abspath(__file__))
-    dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
+    dgae= pd.read_parquet(os.path.join(BASE, "modules/files/dgae.parquet"), engine="fastparquet")
     conexion = EncuestasDB(dgae)
     
     # Prámetros comunes de gráficas
     fig_params = {'autosize':False,
-    'paper_bgcolor':"SlateGray",
+    'paper_bgcolor':"#605B56",
     'font':dict(color ='Ivory'),
-    'showlegend':False}
+    'showlegend':False,
+    'margin' : dict(l=30, r=30, t=80, b=50)}
 
     # Gráfica por encuestador
     porEncuestador =  conexion.cuentaPorEncuestador()
@@ -118,11 +120,26 @@ def estado(request):
     porMes_fig = porMes_fig.to_html()
     
     # Gráfica por Carrera
+    porCarrera = conexion.cuentaPorCarrera()
+    porCarrera_fig = go.Figure(data = [go.Table(header = dict(values = ['Clave Plantel', 'Plantel', 'Clave Carrera', 'Carrera', 'Internet', 'Telefonicas'], fill_color='#454ADE', align='left', font=dict(color='Ivory')),
+                                 cells = dict(values=[porCarrera.ClavePlantel, porCarrera.Plantel, porCarrera.ClaveCarrera, porCarrera.Carrera, porCarrera.Internet, porCarrera.Telefonicas], align='left', fill_color= '#b8c5d6'))],
+                layout_title_text ='Conteo por Carrera',
+                layout_title_font = go.layout.title.Font(color = 'Ivory'))
 
+    fig_params_c = {'autosize':False,
+                  'width':800,
+                  'height': 800,
+                  'paper_bgcolor':"#605B56",
+                  'margin' : dict(l=30, r=30, t=80, b=50)}
+    porCarrera_fig.update_layout(fig_params_c)
+    porCarrera_fig = porCarrera_fig.to_html()
+
+
+    # Contexto
     context={
     'porEncuestador' : porEncuestador_fig,
     'porMes': porMes_fig,
-    'porCarrera' : conexion.cuentaPorCarrera().to_html()
+    'porCarrera' : porCarrera_fig
     }
         
     return HttpResponse(template.render(context,request))
