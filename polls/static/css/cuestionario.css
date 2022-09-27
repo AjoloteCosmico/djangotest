@@ -7,9 +7,10 @@
 }
 body {
   /*background: url(http://img6.uploadhouse.com/fileuploads/17737/17737075bdad5cfa9423bb2c3c2beee695c72bb8.jpg); */
-  background: url("/static/biblioteca3.png") 50% 0 no-repeat fixed;
+  /*background: url("/static/biblioteca3_darker.png") 50% 0 no-repeat fixed;*/
+  background: url("/static/Fondo2.jpg") 50% 0 no-repeat fixed;
   background-size: cover;
-  color: #B1B1B1;
+  color: #d1cbcd;
   margin: 15px auto 0;
   width: 410px;
   
@@ -89,15 +90,55 @@ body {
 
 .cabecera1{
   text-align: center;
-  padding: 40px;
+  padding: 45px;
+  
 }
 .cabecera2{
   text-align: left;
-  padding: 30px;
+  padding: 50px;
   font-weight: bolder;
+  size: 40px;
 }
 
 .conteos{
-  align-items: row;
-  font-size: 14px;
+  display: flex;
+  justify-content: center;
+  size: 40px;
+  font-weight: bold;
+}
+
+.grafica{
+ margin-left: 30px;	
+}
+
+table {
+  table-layout: fixed;
+  width: 100%;
+  border-collapse: collapse;
+  border: 3px solid rgb(199, 188, 199);
+}
+
+thead th:nth-child(1) {
+  width: 10%;
+}
+
+thead th:nth-child(2) {
+  width: 50%;
+}
+
+thead th:nth-child(3) {
+  width: 50%;
+}
+
+thead th:nth-child(4) {
+  width: 30%;
+}
+thead th:nth-child(5) {
+  width: 30%;
+}
+
+
+th,
+td {
+  padding: 10px;
 }

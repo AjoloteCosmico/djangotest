@@ -1,5 +1,7 @@
+from ctypes import sizeof
 import http
 from pickle import TRUE
+from turtle import width
 from django.http import HttpResponse
 from django.template import loader
 from .forms import respForm
@@ -10,7 +12,8 @@ from .modules.EncuestasSQL import EncuestasDB
 import pandas as pd
 import os
 import plotly.express as px
-
+import plotly.graph_objects as go
+import polls.apps
 def createpost(request):
 
         if request.method == "POST":
@@ -41,11 +44,12 @@ def results(request, question_id):
 def vote(request, question_id):
     return HttpResponse("You're voting on question %s." % question_id)
 def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    #BASE = os.path.dirname(os.path.abspath(__file__))
+    #request.session['dgae']=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx")).to_json()
     template = loader.get_template('polls/index.html')
     #TODO: cargar aqui todos los files nescesarios, puede ser usando cahcé, o sessions
     #request.session['dgae']=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
-    
+    print("index: yo tengo tengo el anillo" )
     context = {
         'context': "ahi andamos, al 100"
     }
@@ -80,14 +84,18 @@ def estado(request):
     template=loader.get_template('polls/estado.html')
     #dgae=pd.DataFrame(request.session.get('dgae'))
     #cargando archivo de dgae, en futuras versiones se deve cargar previamente
-    BASE = os.path.dirname(os.path.abspath(__file__))
-    dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
+    dgae=polls.apps.dgae
+    #dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
     conexion = EncuestasDB(dgae)
     
     # Prámetros comunes de gráficas
     fig_params = {'autosize':False,
-    'paper_bgcolor':"SlateGray",
-    'font':dict(color ='Ivory'),
+    'paper_bgcolor':'rgba(0,0,0,0)',
+    'plot_bgcolor':'rgba(0,0,0,0)',
+    'font':dict(
+        size=19,
+        color ='rgb(200,200,200)'),
+        
     'showlegend':False}
 
     # Gráfica por encuestador
@@ -97,10 +105,10 @@ def estado(request):
                                 y='Realizadas',
                                 color='Encuestador',
                                 title='Conteo por Encuestador',
-                                labels={"Realizadas": "Conteo"})
+                                labels={"Realizadas": "Encuestas Realizadas"})
     porEncuestador_fig.update_layout(fig_params)
-    porEncuestador_fig.update_layout({'width':800,
-                                      'height':400})
+    porEncuestador_fig.update_layout({'width':1000,
+                                      'height':600})
     porEncuestador_fig = porEncuestador_fig.to_html()
     
     # Gráfica por Mes
@@ -110,22 +118,106 @@ def estado(request):
              x='realizadas',
              color='Mes',
              title='Conteo por Mes',
-             labels={"realizadas": "Conteo"},
+             labels={"realizadas": "Encuestas realizadas"},
              orientation='h')
     porMes_fig.update_layout(fig_params)
-    porMes_fig.update_layout({'width':600,
+    porMes_fig.update_layout({'width':1000,
                               'height':1000})
     porMes_fig = porMes_fig.to_html()
     
     # Gráfica por Carrera
+    porCarrera = conexion.cuentaPorCarrera()
+    porCarrera_fig = go.Figure(
+        data = [go.Table(
+            header = dict(
+                    values = ['Clave Plantel', 'Plantel', 'Clave Carrera', 'Carrera', 'Internet', 'Telefonicas'], 
+                    fill_color='#0A0A0A', 
+                    align='left',
+                    font=dict(color='rgb(190,190,190)',size=20)),
+            cells = dict(
+                    values=[porCarrera.ClavePlantel, porCarrera.Plantel, porCarrera.ClaveCarrera, porCarrera.Carrera, porCarrera.Internet, porCarrera.Telefonicas], 
+                    align='left', 
+                    fill_color= 'rgba(0,0,0,0)',
+                    height=25,
+                    font=dict(color='rgb(190,190,190)',size=18)))],
+            layout_title_text ='Conteo por Carrera',
+            layout_title_font = go.layout.title.Font(color = 'rgb(200,200,200)',family='Georgia',size=25)
+            )
+
+    fig_params_c = {'autosize':False,
+                  'width':900,
+                  'height': 900,
+                  'paper_bgcolor':"rgba(0,0,0,0)",
+                  'margin' : dict(l=30, r=30, t=80, b=50)}
+    porCarrera_fig.update_layout(fig_params_c)
+    porCarrera_fig = porCarrera_fig.to_html()
 
     context={
     'porEncuestador' : porEncuestador_fig,
     'porMes': porMes_fig,
-    'porCarrera' : conexion.cuentaPorCarrera().to_html()
+    'porCarrera': porCarrera_fig
     }
         
     return HttpResponse(template.render(context,request))
+
+
+
+
+
+def estado12(request):
+    template=loader.get_template('polls/estado12.html')
+    #dgae=pd.DataFrame(request.session.get('dgae'))
+    #cargando archivo de dgae, en futuras versiones se deve cargar previamente
+    dgae=polls.apps.dgae
+    #dgae=pd.read_excel(os.path.join(BASE, "modules/files/dgae.xlsx"))
+    conexion = EncuestasDB(dgae)
+    
+    # Prámetros comunes de gráficas
+    fig_params = {'autosize':False,
+    'paper_bgcolor':'rgba(0,0,0,0)',
+    'plot_bgcolor':'rgba(0,0,0,0)',
+    'font':dict(
+        size=19,
+        color ='rgb(200,200,200)'),
+        
+    'showlegend':False}
+
+    # Gráfica por encuestador
+    porEncuestador =  conexion.cuentaPorEncuestador2012()
+    porEncuestador_fig = px.bar(porEncuestador,
+                                x='Encuestador',
+                                y='Realizadas',
+                                color='Encuestador',
+                                title='Conteo por Encuestador',
+                                labels={"Realizadas": "Encuestas Realizadas"})
+    porEncuestador_fig.update_layout(fig_params)
+    porEncuestador_fig.update_layout({'width':1000,
+                                      'height':600})
+    porEncuestador_fig = porEncuestador_fig.to_html()
+
+      # Gráfica por Mes
+    porMes = conexion.cuentaPorMes2012()
+    porMes_fig = px.bar(porMes,
+             y='Mes',
+             x='realizadas',
+             color='Mes',
+             title='Conteo por Mes',
+             labels={"realizadas": "Encuestas realizadas"},
+             orientation='h')
+    porMes_fig.update_layout(fig_params)
+    porMes_fig.update_layout({'width':1000,
+                              'height':1000})
+    porMes_fig = porMes_fig.to_html()
+    
+    
+    context={
+    'porEncuestador' : porEncuestador_fig,
+    'porMes': porMes_fig,
+    #'porCarrera': porCarrera_fig
+    }
+        
+    return HttpResponse(template.render(context,request))
+
 
 def addresp(request):
     form = respForm

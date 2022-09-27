@@ -3,7 +3,8 @@
   --white: #faf0f6;
 }
 body {
-    background-color: var(--black); 
+    background: url("/static/Fondo1.jpg")50% 0 no-repeat fixed;
+    background-color:  var(--black) ;
     color: var(--white);
     text-align: center;
   }
