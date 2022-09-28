@@ -3,22 +3,33 @@
 <html lang="en-US">
   <head>
     <meta charset="utf-8">
-    <title>Nueva Encuesta (Prueba)</title>
+    <title>PVE</title>
     
     <link rel="shortcut icon" href= "{%  static 'favicon.ico' %}"/>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
       </head>
   <body>
-    <H1>Diseño en proceso</H1>
-    <p>Lista de encuestas</p>
+    <H1>Programa de Vinculacion Externa</H1>
     <br><br>
+    <p>Encuestas futuras:</p>
+    
     <button  class="button" onclick="location.href='{% url 'encuesta01' %}'">
-      <a> Encuesta exalumnos</a>
+      <a> Encuesta exalumnos 2020</a>
        </button>
        <br><br>
+    <p>Current analysis:</p>
     <button  class="button" onclick="location.href='{% url 'estado' %}'">
-      <a >Estado del estudio</a>
+      <a >Estado del estudio 2019</a>
         </button> 
+        <br>
+    <button  class="button" onclick="location.href='{% url 'estado12' %}'">
+          <a >Estado del estudio 2012</a>
+            </button> 
+            <br><br>
+    <p>Otras Funciones:</p>
+    <button  class="button" onclick="location.href='{% url 'consultarNumero' %}'">
+              <a >Consulta Numero de Cuenta</a>
+                </button> 
 
     <!--{% if latest_question_list %}
     <ul>

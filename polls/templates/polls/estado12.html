@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <title>Estadisticas 2012</title>
+    
+    <link rel="shortcut icon" href= "{%  static 'favicon.ico' %}"/>
+    <link rel="stylesheet" href="{% static 'css/cuestionario.css' %}">
+    <!--<script src="{% static 'funciones.js' %}"></script>   -->
+      </head>
+  <body>
+    <div >
+      <h1 class="cabecera1">
+        <hr>
+        <b>Encuestas Realizadas</b>
+        <hr>
+      </h1>
+      
+    </div>
+<div class="conteos">
+
+  <div class="grafica">
+    
+    {{porEncuestador|safe}}
+  </div>
+
+</div>
+<br>
+<div class="conteos">
+
+  <div class="grafica">
+    {{porMes|safe}}
+  </div>
+  
+</div>
+  </body>
+</html>

@@ -3,12 +3,14 @@ import mysql.connector
 import pandas as pd
 import os
 import plotly.graph_objects as go
-
+from cmath import isnan
 class EncuestasDB:
     cnx = mysql.connector.connect(user='fgonzalez', password='6bM59%1**t^O',
                               host='192.168.0.254',
                               database='encuesta',
                               use_pure=False)
+                              
+    cursor=cnx.cursor()
     encuestas = pd.DataFrame()
     encuestasIncompletas=pd.DataFrame()
     Eg2019 =    pd.DataFrame()
@@ -32,7 +34,7 @@ class EncuestasDB:
         columna = columna.copy()
         # Convertir la columna a tipo Series de pandas
         columna = pd.Series(columna)
-        # Convertir a tipo string
+        # Convertir a tipo string  
         columna = columna.astype('str')
         # Remplazar todo lo que no es número con la cadena vacía
         columna = columna.str.replace("\D", "", regex = True)
@@ -46,6 +48,9 @@ class EncuestasDB:
     def __init__(self,dgae):
         BASE = os.path.dirname(os.path.abspath(__file__))
         self.cnx.commit()
+        self.cursor=self.cnx.cursor()
+        self.cursor.execute("use encuesta")
+
         #Todas las encuestas alv, elegir NBR7 también 
         query = ('SELECT cuenta, aplica, fec_capt, nbr7,ngr11f FROM respuestas2  order by fec_capt ')
         self.encuestas=pd.read_sql(query,self.cnx)
@@ -69,9 +74,9 @@ class EncuestasDB:
         self.encuestasIncompletas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].isna()]
         self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('ClaveCarrera', "Carrera")).drop_duplicates() 
         self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('ClavePlantel', "Plantel")).drop_duplicates()
-        print(" EncuestasDB del PVE Comit 1.2.6")
+        print(" EncuestasDB del PVE Comit 1.2.7")
 
-
+    
 
     def carrera(self,clave):
         Scarrera=str(self.listado_carreras.loc[self.listado_carreras["ClaveCarrera"]==clave,"Carrera"].values[0])
@@ -83,9 +88,12 @@ class EncuestasDB:
         Splantel=str(self.listado_planteles.loc[self.listado_planteles["ClavePlantel"]==clave,"Plantel"].values[0])
             #return(unidecode.unidecode(Splantel.upper()))
         return Splantel
-
+    #TODO: asegurarse que siempre se use la DB a trabajar encuestas para2019 y encuestatest para 2012
 
     def cuentaPorEncuestador(self,fechaInicial=None):
+         #Cambiar a la base de datos de 2019
+        self.cursor.execute("use encuesta")
+
         df = self.encuestas
         if fechaInicial:
             df = df[df['fec_capt'] > fechaInicial]
@@ -96,6 +104,23 @@ class EncuestasDB:
         for i in df["aplica"]:
             if i in ClavesNombres.keys():
                 contador[i] += 1
+        contador = pd.DataFrame([[ClavesNombres[k],contador[k]] for k in contador.keys()], columns=['Encuestador', 'Realizadas'])
+        return contador
+        
+    def cuentaPorEncuestador2012(self,fechaInicial=None):
+       #Cambiar a la base de datos de 2012
+        self.cursor.execute("use encuestatest")
+        df = pd.read_sql('SELECT cuenta, encuestador, fec_capt,ngr49 FROM respuesta1  order by fec_capt ',self.cnx)
+        if fechaInicial:
+            df = df[df['fec_capt'] > fechaInicial]
+        ClavesNombres = {'17': 'Erendira', '12':'Mónica', '15':'César', '20':'María', '21':'Ivonne'}
+        contador = {k:0 for k in ClavesNombres.keys()}
+        contador['20'] += 39
+        contador['21'] += 6
+        for i in df["encuestador"]:
+            if  not(isnan(i)):
+                if str(int(i)) in ClavesNombres.keys():
+                      contador[str(int(i))] += 1
         contador = pd.DataFrame([[ClavesNombres[k],contador[k]] for k in contador.keys()], columns=['Encuestador', 'Realizadas'])
         return contador
     
@@ -109,7 +134,36 @@ class EncuestasDB:
              fxn()
         Meses = {'01': 'Enero', '02':'Febrero', '03':'Marzo', '04':'Abril', '05':'Mayo','06': 'Junio',
                    '07': 'Julio', '08':'Agosto', '09':'Septiembre', '10':'Octubre', '11':'Noviembre', '12':'Diciembre'}
+        #Cambiar a la base de datos de 2019
+        self.cursor.execute("use encuesta")
         df = self.encuestas
+        if fechaInicial:
+            df = df[df['fec_capt'] > fechaInicial]
+        conteo=pd.DataFrame(columns=["Mes","realizadas"])
+        contador = df.groupby(df['fec_capt'].dt.strftime('%Y-%m'))['cuenta'].count()
+        sinFecha = len(df) - contador.sum()
+        contador = pd.DataFrame(contador)
+        for i in contador.itertuples():
+            conteo=conteo.append({"Mes": Meses[i[0][5:7]]+" "+i[0][0:4],
+                              "realizadas": i[1]
+                              },ignore_index=True)
+        
+        #conteo=conteo.append({"Mes": "Sin fecha","realizadas": sinFecha},ignore_index=True)
+        return conteo
+    
+    def cuentaPorMes2012(self,fechaInicial=None):
+        import warnings
+        def fxn():
+           warnings.warn("deprecated", DeprecationWarning)
+
+        with warnings.catch_warnings():
+             warnings.simplefilter("ignore")
+             fxn()
+        Meses = {'01': 'Enero', '02':'Febrero', '03':'Marzo', '04':'Abril', '05':'Mayo','06': 'Junio',
+                   '07': 'Julio', '08':'Agosto', '09':'Septiembre', '10':'Octubre', '11':'Noviembre', '12':'Diciembre'}
+        #Cambiar a la base de datos de 2019
+        self.cursor.execute("use encuestatest")
+        df = pd.read_sql('SELECT cuenta, encuestador, fec_capt,ngr49 FROM respuesta1  order by fec_capt ',self.cnx)
         if fechaInicial:
             df = df[df['fec_capt'] > fechaInicial]
         conteo=pd.DataFrame(columns=["Mes","realizadas"])
