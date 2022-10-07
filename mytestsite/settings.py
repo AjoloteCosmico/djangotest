@@ -32,13 +32,15 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'polls.apps.PollsConfig',
+    'polls',
+    #'polls.apps.PollsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "django_unicorn",
 ]
 
 MIDDLEWARE = [
@@ -65,6 +67,9 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+           'libraries': {
+            'buscarcuentas': 'polls.templatetags.buscarcuentas',
+        }
         },
     },
 ]

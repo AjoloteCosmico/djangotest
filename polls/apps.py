@@ -1,9 +1,9 @@
 from re import X
+from django import template
 from django.apps import AppConfig
 import os
 import pandas as pd
 from django.shortcuts import render,redirect
-
 class PollsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'polls'

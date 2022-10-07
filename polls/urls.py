@@ -16,7 +16,8 @@ urlpatterns = [
     path('estado12', views.estado12, name='estado12'),
     path('consultarNumero', views.consutarNumero, name='consultarNumero'),
     path('favicon.ico', RedirectView.as_view(url=staticfiles_storage.url('favicon.ico'))),
-    path('add-resp', views.addresp, name="add-resp")
+    path('add-resp', views.addresp, name="add-resp"),
+    path('ultimos-encuestados', views.ultimosIngresados, name="ultimos-encuestados")
     ]
 
     

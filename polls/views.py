@@ -1,3 +1,4 @@
+from cmath import nan
 from ctypes import sizeof
 import http
 from pickle import TRUE
@@ -5,7 +6,7 @@ from re import T
 from turtle import width
 from django.http import HttpResponse
 from django.template import loader
-from .forms import respForm
+from .forms import buscarNum, respForm,actualizar
 from .models import Question
 from .models import respuestas
 from django.shortcuts import render,redirect
@@ -53,13 +54,58 @@ def index(request):
         'context': "ahi andamos, al 100"
     }
     return HttpResponse(template.render(context, request))
-def consutarNumero(request):
-    template = loader.get_template('polls/consultarNumero.html')
 
-    print("consulta: yo tengo tengo el anillo" )
-    context = {
-        'enc12': True
-    }
+
+
+def ultimosIngresados(request):#esta pantalla retornara los numeros de cuenta ingresados el dia en curso
+    template = loader.get_template('polls/ultimosIngresados.html')
+    conexion=EncuestasDB(polls.apps.dgae)
+    from datetime import date
+
+    today = date.today()
+    conexion=EncuestasDB(polls.apps.dgae)
+    ult=conexion.encuestas
+    info=ult.loc[ult['fec_capt']==str(today)].to_html()
+    
+    if request.method == 'POST':
+       
+        conexion.cursor.execute("use encuesta")
+        try:
+                conexion=EncuestasDB(polls.apps.dgae)
+                ult=conexion.encuestas
+                info=ult.loc[ult['fec_capt']==str(today)].to_html()
+                
+        except:
+               print("")
+               print("algo esta pasando !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+               info="nan"
+    context = { 'info': info,'today':today}
+    
+    return HttpResponse(template.render(context, request))
+
+
+def consutarNumero(request):
+   
+    template = loader.get_template('polls/consultarNumero.html')
+    conexion=EncuestasDB(polls.apps.dgae)
+    info="No hay ningun numero ingresado"
+   
+    form = buscarNum(request.POST)
+    if request.method == 'POST':
+        form = buscarNum(request.POST)
+        if form.is_valid():
+            cd=form.cleaned_data
+            cuenta=cd.get('cuenta')
+            conexion.cursor.execute("use encuesta")
+            try:
+                conexion.cnx.commit()
+                info=pd.read_sql("SELECT nombre,nbr2,ngr11f FROM respuestas2  where cuenta = "+cuenta,conexion.cnx).values[0]
+                print(info)
+            except:
+                info="nan"
+
+    context = {'form':form, 'info': str(info)}
+    
     return HttpResponse(template.render(context, request))
 
 

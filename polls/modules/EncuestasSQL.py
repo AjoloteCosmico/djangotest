@@ -10,7 +10,7 @@ class EncuestasDB:
                               database='encuesta',
                               use_pure=False)
                               
-    cursor=cnx.cursor()
+    cursor=cnx.cursor(buffered=True)
     encuestas = pd.DataFrame()
     encuestasIncompletas=pd.DataFrame()
     Eg2019 =    pd.DataFrame()
@@ -47,8 +47,7 @@ class EncuestasDB:
     #Eg2019 pasará a llamarse EgGeneracion
     def __init__(self,dgae):
         BASE = os.path.dirname(os.path.abspath(__file__))
-        self.cnx.commit()
-        self.cursor=self.cnx.cursor()
+        self.cursor=self.cnx.cursor(buffered=True)
         self.cursor.execute("use encuesta")
 
         #Todas las encuestas alv, elegir NBR7 también 
@@ -74,7 +73,7 @@ class EncuestasDB:
         self.encuestasIncompletas=encuestas2019_conMatch.loc[encuestas2019_conMatch["ngr11f"].isna()]
         self.listado_carreras = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[2,3], names=('ClaveCarrera', "Carrera")).drop_duplicates() 
         self.listado_planteles = pd.read_excel(os.path.join(BASE, r'files/Listado de carreras y planteles actualizados-27-06-2022.xlsx'),usecols=[0,1], names=('ClavePlantel', "Plantel")).drop_duplicates()
-        print(" EncuestasDB del PVE Comit 1.2.7")
+        print(" EncuestasDB del PVE Comit 1.2.8")
 
     
 

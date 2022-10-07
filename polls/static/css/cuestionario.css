@@ -39,9 +39,12 @@ body {
   border: none;
   padding: 12px 20px;
   height: 30px;
+  align-self: center;
 }
 .tetsto{
-  justify-content: center;
+  display: flex;
+  justify-items: center;
+  align-items: center;
 }
 #contact {
   overflow: auto;
@@ -136,35 +139,28 @@ body {
 .grafica{
  margin-left: 30px;	
 }
+.izquierda{
+  display: flex;
+  justify-content: left;
+}
+.derecha{
+  display: flex;
+  justify-content: right;
+}
 
 table {
   table-layout: fixed;
-  width: 100%;
   border-collapse: collapse;
   border: 3px solid rgb(199, 188, 199);
+  size: 30px;
 }
-
-thead th:nth-child(1) {
-  width: 10%;
-}
-
-thead th:nth-child(2) {
-  width: 50%;
-}
-
-thead th:nth-child(3) {
-  width: 50%;
-}
-
-thead th:nth-child(4) {
-  width: 30%;
-}
-thead th:nth-child(5) {
-  width: 30%;
-}
-
 
 th,
 td {
   padding: 10px;
+}
+
+.resultado{
+  size: 60px;
+  font-weight: bolder;
 }
