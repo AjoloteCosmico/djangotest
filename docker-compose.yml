@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  djangocurrent:
+    image: djangocurrent
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080
+    volumes: 
+       - ./mytestsite:/mytestsite
+    command: python manage.py runserver 0.0.0.0:8080
